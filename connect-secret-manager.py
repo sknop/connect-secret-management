@@ -18,7 +18,7 @@ def parse_passwords(filename):
         connector = content[i]
         user = content[i + 1]
         password = content[i + 2]
-        if (i+3) >= len(content) or content[i+3] != '':
+        if (i+3) < len(content) and content[i+3] != '':
             print(f"Should have an empty line between section in line {i+3}. Bailing out for safety reasons")
             sys.exit(1)
         result[connector] = (user, password)
