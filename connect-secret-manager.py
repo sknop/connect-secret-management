@@ -46,7 +46,8 @@ def create_secrets(content, arguments):
 
 
 def ensure(args, name):
-    if not hasattr(args, name):
+    print(f"Ensuring {name} is in {args}")
+    if not hasattr(args, name) or getattr(args,name) == None:
         print(f"Argument '{name}' is required")
         sys.exit(1)
 
