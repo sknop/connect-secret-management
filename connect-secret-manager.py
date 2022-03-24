@@ -26,6 +26,12 @@ def parse_passwords(filename):
     return result
 
 
+def post(session, url, entry):
+    r = session.post(url, entry)
+    if r.status_code != 200:
+        print(r.status_code)
+        print(r.text)
+
 def create_secrets(content, arguments):
     session = requests.Session()
 
@@ -35,18 +41,21 @@ def create_secrets(content, arguments):
         session.verify = False
 
     session.auth = (arguments.username, arguments.password)
+    headers = {'Content-type': 'application/json' }
+    session.headers = headers
 
-    for key, value in content.items():
-        url = f"{arguments.url}/secret/paths/{key}/versions"
+    for connector, value in content.items():
+        url_username = f"{arguments.url}/secret/paths/{connector}/keys/username/versions"
+        url_password = f"{arguments.url}/secret/paths/{connector}/keys/password/versions"
+        
         username_entry = json.dumps({'secret': value[0]})
         password_entry = json.dumps({'secret': value[1]})
 
-        session.post(url, username_entry)
-        session.post(url, password_entry)
+        post(session,url_username, username_entry)
+        post(session,url_password, password_entry)
 
 
 def ensure(args, name):
-    print(f"Ensuring {name} is in {args}")
     if not hasattr(args, name) or getattr(args,name) == None:
         print(f"Argument '{name}' is required")
         sys.exit(1)
@@ -84,7 +93,7 @@ def main():
     parsed_args = parser.parse_args()
 
     if parsed_args.config_file:
-        parsed_args = load_configfile(parsed_args, parsed_args.config)
+        parsed_args = load_configfile(parsed_args, parsed_args.config_file)
 
     check_arguments(parsed_args)
 
