@@ -32,6 +32,7 @@ def post(session, url, entry):
         print(r.status_code)
         print(r.text)
 
+
 def create_secrets(content, arguments):
     session = requests.Session()
 
